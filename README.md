@@ -13,10 +13,10 @@ Work in progress.
 
 ## 🚀 Quick start
 
-1.  **Create a .env file**
+1.  **Create a .env.development file**
 
     Create an account on `https://www.themoviedb.org/`
-    get your bearertoken, then in .env file
+    get your bearertoken, then in .env.development file
 
     ```shell
     # bearertoken needed from https://www.themoviedb.org/

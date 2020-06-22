@@ -8,6 +8,8 @@ module.exports = {
   },
   plugins: [
     `source-plugin-themoviedb`,
+    `gatsby-plugin-sharp`,
+    `gatsby-transformer-sharp`,
     {
       resolve: `gatsby-plugin-typography`,
       options: {

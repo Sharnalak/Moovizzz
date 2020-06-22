@@ -3,6 +3,8 @@ const CONFIG_NODE_TYPE = `TMDB_Config`;
 const GENRE_NODE_TYPE = `Genre`;
 const MOVIE_NODE_TYPE = `Movie`;
 
+const { createRemoteFileNode } = require(`gatsby-source-filesystem`);
+
 const { fetchApiConfig } = require('./datafetchs/apiConfiguration');
 const { fetchGenre } = require('./datafetchs/genre');
 const { fetchMoviesByGenre } = require('./datafetchs/moviesByGenre');
@@ -100,4 +102,26 @@ exports.sourceNodes = async ({ actions, createContentDigest, createNodeId, getNo
   }
 
   return;
+};
+
+// called each time a node is created
+exports.onCreateNode = async ({
+  node, // the node that was just created
+  actions: { createNode },
+  createNodeId,
+  getCache
+}) => {
+  if (node.internal.type === MOVIE_NODE_TYPE) {
+    const fileNode = await createRemoteFileNode({
+      // the url of the remote image to generate a node for
+      url: `https://image.tmdb.org/t/p/w780/${node.poster_path}`,
+      parentNodeId: node.id,
+      createNode,
+      createNodeId,
+      getCache
+    });
+    if (fileNode) {
+      node.remotePosterImage___NODE = fileNode.id;
+    }
+  }
 };
