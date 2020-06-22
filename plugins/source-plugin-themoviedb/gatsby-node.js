@@ -1,37 +1,67 @@
-// constants for your GraphQL Post and Author types
+// constants for your GraphQL
+const CONFIG_NODE_TYPE = `TMDB_Config`;
 const GENRE_NODE_TYPE = `Genre`;
 const MOVIE_NODE_TYPE = `Movie`;
+
+const { fetchApiConfig } = require('./datafetchs/apiConfiguration');
 const { fetchGenre } = require('./datafetchs/genre');
 const { fetchMoviesByGenre } = require('./datafetchs/moviesByGenre');
 
-exports.createSchemaCustomization = ({ actions }) => {
+exports.createSchemaCustomization = ({ actions, schema }) => {
   const { createTypes } = actions;
-  createTypes(`
-    type Genre implements Node @dontInfer {
+  createTypes([
+    `
+    type Genre implements Node {
       name: String!
     }
-
-    type Movie implements Node @dontInfer {
-      popularity: Float!
-      vote_average: Float!
-      vote_count: Int!
-      video: Boolean!
-      poster_path: String!
-      adult: Boolean!
-      backdrop_path: String!
-      original_language: String!
-      original_title: String!
-      title: String!
-      # create relationships between Movie and Genre nodes
-      genre_ids: [Genre!]! @link
-      overview: String!
-      release_date: String!
-    }
-    `);
+    `,
+    schema.buildObjectType({
+      name: 'Movie',
+      fields: {
+        popularity: 'Float!',
+        vote_average: 'Float!',
+        vote_count: 'Int!',
+        video: 'Boolean!',
+        poster_path: 'String',
+        adult: 'Boolean!',
+        backdrop_path: 'String',
+        original_language: 'String',
+        original_title: 'String',
+        title: 'String!',
+        overview: 'String!',
+        release_date: 'String!',
+        genre_ids: {
+          type: '[Genre!]!',
+          resolve: (source, args, context, info) => {
+            genres = context.nodeModel.getAllNodes({ type: 'Genre' }).filter(genre => {
+              condition = source.genre_ids.includes(parseInt(genre.id));
+              return condition;
+            });
+            return genres;
+          }
+        }
+      },
+      interfaces: ['Node']
+    })
+  ]);
 };
 
 exports.sourceNodes = async ({ actions, createContentDigest, createNodeId, getNodesByType }) => {
   const { createNode } = actions;
+
+  const apiConfig = await fetchApiConfig();
+
+  createNode({
+    ...apiConfig,
+    id: createNodeId(`${CONFIG_NODE_TYPE}`),
+    parent: null,
+    children: [],
+    internal: {
+      type: CONFIG_NODE_TYPE,
+      content: JSON.stringify(apiConfig),
+      contentDigest: createContentDigest(apiConfig)
+    }
+  });
 
   try {
     const { genres } = await fetchGenre();
@@ -41,7 +71,7 @@ exports.sourceNodes = async ({ actions, createContentDigest, createNodeId, getNo
 
       createNode({
         ...genres[index],
-        id: createNodeId(`${GENRE_NODE_TYPE}-${genres[index].id}`),
+        id: `${genres[index].id}`,
         parent: null,
         children: [],
         internal: {
