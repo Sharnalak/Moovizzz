@@ -28,7 +28,7 @@ Work in progress.
 
     ```shell
     npm install
-    gatsby develop
+    npm start
     ```
 
 1.  **Open the source code and start editing!**
