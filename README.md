@@ -7,7 +7,7 @@
   Moovizz project
 </h1>
 
-This project display a list of movies ordered by genre.
+This project display a list of movies.
 Work in progress.
 
 ## 🚀 Quick start
