@@ -1,14 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+import { graphql } from 'gatsby';
 
 import Layout from '../components/Layout';
 import Thumbnail from '../components/Thumbnail';
 
 const List = styled.ul`
-  display: flex;
+  display: inline-flex;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
+  margin: 0;
 `;
 
 export default function Home({ data }) {
@@ -30,6 +32,9 @@ export const query = graphql`
         genre_ids {
           id
           name
+        }
+        fields {
+          slug
         }
         remotePosterImage {
           childImageSharp {

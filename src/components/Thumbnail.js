@@ -1,5 +1,6 @@
 import React from 'react';
 import Img from 'gatsby-image';
+import { Link } from 'gatsby';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -7,7 +8,6 @@ const Container = styled.div`
   transition: transform 0.2s;
   position: relative;
   z-index: 1;
-  margin-bottom: 20px;
 
   .content {
     display: none;
@@ -63,30 +63,37 @@ const ListGenres = styled.ul`
 `;
 
 function Thumbnail(props) {
-  const { title, genre_ids, remotePosterImage } = props;
+  const {
+    title,
+    genre_ids,
+    remotePosterImage,
+    fields: { slug }
+  } = props;
   return (
     <Container>
-      {remotePosterImage ? (
-        <Img
-          fluid={remotePosterImage.childImageSharp.fluid}
-          backgroundColor={'red'}
-          alt="A corgi smiling happily"
-        />
-      ) : (
-        <NoImgSource>
-          <p>Source missing</p>
-        </NoImgSource>
-      )}
-      <div className={`content`}>
-        <Title>{title}</Title>
-        {genre_ids.length && (
-          <ListGenres>
-            {genre_ids.map(genre => (
-              <li key={genre.id}>{genre.name}</li>
-            ))}
-          </ListGenres>
+      <Link to={slug}>
+        {remotePosterImage ? (
+          <Img
+            fluid={remotePosterImage.childImageSharp.fluid}
+            backgroundColor={'red'}
+            alt="A corgi smiling happily"
+          />
+        ) : (
+          <NoImgSource>
+            <p>Source missing</p>
+          </NoImgSource>
         )}
-      </div>
+        <div className={`content`}>
+          <Title>{title}</Title>
+          {genre_ids.length && (
+            <ListGenres>
+              {genre_ids.map(genre => (
+                <li key={genre.id}>{genre.name}</li>
+              ))}
+            </ListGenres>
+          )}
+        </div>
+      </Link>
     </Container>
   );
 }

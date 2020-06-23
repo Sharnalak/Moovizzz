@@ -4,6 +4,7 @@ const GENRE_NODE_TYPE = `Genre`;
 const MOVIE_NODE_TYPE = `Movie`;
 
 const { createRemoteFileNode } = require(`gatsby-source-filesystem`);
+const path = require(`path`);
 
 const { fetchApiConfig } = require('./datafetchs/apiConfiguration');
 const { fetchGenre } = require('./datafetchs/genre');
@@ -84,17 +85,19 @@ exports.sourceNodes = async ({ actions, createContentDigest, createNodeId, getNo
       });
 
       movies.results.forEach(movie => {
-        createNode({
-          ...movie,
-          id: createNodeId(`${MOVIE_NODE_TYPE}-${movie.id}`),
-          parent: null,
-          children: [],
-          internal: {
-            type: MOVIE_NODE_TYPE,
-            content: JSON.stringify(movie),
-            contentDigest: createContentDigest(movie)
-          }
-        });
+        if (movie.poster_path) {
+          createNode({
+            ...movie,
+            id: createNodeId(`${MOVIE_NODE_TYPE}-${movie.id}`),
+            parent: null,
+            children: [],
+            internal: {
+              type: MOVIE_NODE_TYPE,
+              content: JSON.stringify(movie),
+              contentDigest: createContentDigest(movie)
+            }
+          });
+        }
       });
     }
   } catch (exception) {
@@ -107,7 +110,7 @@ exports.sourceNodes = async ({ actions, createContentDigest, createNodeId, getNo
 // called each time a node is created
 exports.onCreateNode = async ({
   node, // the node that was just created
-  actions: { createNode },
+  actions: { createNode, createNodeField },
   createNodeId,
   getCache
 }) => {
@@ -120,8 +123,45 @@ exports.onCreateNode = async ({
       createNodeId,
       getCache
     });
+
+    createNodeField({
+      node,
+      name: `slug`,
+      value: node.id
+    });
+
     if (fileNode) {
       node.remotePosterImage___NODE = fileNode.id;
     }
   }
+};
+
+exports.createPages = async ({ graphql, actions: { createPage } }) => {
+  const result = await graphql(`
+    query {
+      allMovie {
+        edges {
+          node {
+            fields {
+              slug
+            }
+          }
+        }
+      }
+    }
+  `);
+
+  result.data.allMovie.edges.forEach(({ node }) => {
+    if (node && node.fields && node.fields.slug) {
+      createPage({
+        path: node.fields.slug,
+        component: path.resolve(`src/templates/Movie.js`),
+        context: {
+          // Data passed to context is available
+          // in page queries as GraphQL variables.
+          slug: node.fields.slug
+        }
+      });
+    }
+  });
 };
