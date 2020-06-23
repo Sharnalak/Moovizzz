@@ -1,11 +1,29 @@
 import React from 'react';
 import { useStaticQuery, Link, graphql } from 'gatsby';
+import styled, { createGlobalStyle } from 'styled-components';
 
-const ListLink = props => (
-  <li style={{ display: `inline-block`, marginRight: `1rem` }}>
-    <Link to={props.to}>{props.children}</Link>
-  </li>
-);
+const GlobalStyle = createGlobalStyle`
+  body {
+    background: #141414;
+    color: #fff;
+    padding: 32px;
+  }
+
+  a {
+    color: #fff;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
 
 export default function Layout({ children }) {
   const data = useStaticQuery(
@@ -21,18 +39,14 @@ export default function Layout({ children }) {
   );
 
   return (
-    <div style={{ margin: `3rem auto`, maxWidth: 650, padding: `0 1rem` }}>
-      <header style={{ marginBottom: `1.5rem` }}>
-        <Link to="/" style={{ textShadow: `none`, backgroundImage: `none` }}>
-          <h3 style={{ display: `inline` }}>{data.site.siteMetadata.title}</h3>
+    <Wrapper>
+      <GlobalStyle />
+      <header>
+        <Link to="/">
+          <h1>{data.site.siteMetadata.title}</h1>
         </Link>
-        <ul style={{ listStyle: `none`, float: `right` }}>
-          <ListLink to="/">Home</ListLink>
-          <ListLink to="/about/">About</ListLink>
-          <ListLink to="/contact/">Contact</ListLink>
-        </ul>
       </header>
       {children}
-    </div>
+    </Wrapper>
   );
 }
