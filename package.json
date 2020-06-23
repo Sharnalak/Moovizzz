@@ -1,12 +1,12 @@
 {
-  "name": "gatsby-starter-hello-world",
+  "name": "moovizz",
   "private": true,
-  "description": "A simplified bare-bones starter for Gatsby",
+  "description": "Project using gatsbyjs",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "build": "GATSBY_ENV=production gatsby build",
-    "develop": "GATSBY_TEST=development gatsby develop",
+    "build": "gatsby build",
+    "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
     "serve": "gatsby serve",
