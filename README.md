@@ -10,6 +10,12 @@
 This project display a list of movies.
 Work in progress.
 
+## TODO
+
+1.  **Add typing**
+1.  **Add tests**
+1.  **Add ordering by genre**
+
 ## 🚀 Quick start
 
 1.  **Create a .env.development file**
