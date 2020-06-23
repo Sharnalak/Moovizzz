@@ -66,42 +66,38 @@ exports.sourceNodes = async ({ actions, createContentDigest, createNodeId, getNo
     }
   });
 
-  try {
-    const { genres } = await fetchGenre();
+  const { genres } = await fetchGenre();
 
-    for (let index = 0; index < genres.length; index++) {
-      const movies = await fetchMoviesByGenre(genres[index].id);
+  for (let index = 0; index < genres.length; index++) {
+    const movies = await fetchMoviesByGenre(genres[index].id);
 
-      createNode({
-        ...genres[index],
-        id: `${genres[index].id}`,
-        parent: null,
-        children: [],
-        internal: {
-          type: GENRE_NODE_TYPE,
-          content: JSON.stringify(genres[index]),
-          contentDigest: createContentDigest(genres[index])
-        }
-      });
+    createNode({
+      ...genres[index],
+      id: `${genres[index].id}`,
+      parent: null,
+      children: [],
+      internal: {
+        type: GENRE_NODE_TYPE,
+        content: JSON.stringify(genres[index]),
+        contentDigest: createContentDigest(genres[index])
+      }
+    });
 
-      movies.results.forEach(movie => {
-        if (movie.poster_path) {
-          createNode({
-            ...movie,
-            id: createNodeId(`${MOVIE_NODE_TYPE}-${movie.id}`),
-            parent: null,
-            children: [],
-            internal: {
-              type: MOVIE_NODE_TYPE,
-              content: JSON.stringify(movie),
-              contentDigest: createContentDigest(movie)
-            }
-          });
-        }
-      });
-    }
-  } catch (exception) {
-    console.error(`Failed to retrieve user informations: (${exception})`);
+    movies.results.forEach(movie => {
+      if (movie.poster_path) {
+        createNode({
+          ...movie,
+          id: createNodeId(`${MOVIE_NODE_TYPE}-${movie.id}`),
+          parent: null,
+          children: [],
+          internal: {
+            type: MOVIE_NODE_TYPE,
+            content: JSON.stringify(movie),
+            contentDigest: createContentDigest(movie)
+          }
+        });
+      }
+    });
   }
 
   return;
